@@ -7,9 +7,12 @@ class Bicycle
     @tire_size = args[:tire_size] || default_tire_size
   end
 
-
   def default_chain
     '10-speed'
+  end
+
+  def default_tire_size
+    raise NotImplementedError, "This #{self.class} cannot respond to:"
   end
 end
 
@@ -52,6 +55,18 @@ class RoadBike < Bicycle
   end
 end
 
+class RecumbentBike < Bicycle
+  def default_chain
+    '9-speed'
+  end
+
+  def default_tire_size
+    '20'
+  end
+end
+
 mountain_bike = MountainBike.new(size: 'S', front_shock: 'Manitou', rear_shock: 'Fox')
 puts mountain_bike.tire_size
 puts mountain_bike.chain
+
+bent = RecumbentBike.new(size: 'S')
