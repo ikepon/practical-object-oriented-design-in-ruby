@@ -1,9 +1,9 @@
 class Bicycle
   attr_reader :size, :tape_color
 
-  def initialize(size:, tape_color:)
-    @size = size
-    @tape_color = tape_color
+  def initialize(args)
+    @size = args[:size]
+    @tape_color = args[:tape_color]
   end
 
   def spares
@@ -16,5 +16,23 @@ class Bicycle
 end
 
 bicycle = Bicycle.new(size: 'M', tape_color: 'red')
-puts bicycle.size
-puts bicycle.spares
+# puts bicycle.size
+# puts bicycle.spares
+
+class MountainBike < Bicycle
+  attr_reader :front_shock, :rear_shock
+
+  def initialize(args)
+    @front_shock = args[:front_shock]
+    @rear_shock = args[:rear_shock]
+    super(args)
+  end
+
+  def spares
+    super.merge(rear_shock: rear_shock)
+  end
+end
+
+mountain_bike = MountainBike.new(size: 'S', front_shock: 'Manitou', rear_shock: 'Fox')
+puts mountain_bike.size
+puts mountain_bike.spares
