@@ -7,6 +7,13 @@ class Bicycle
     @tire_size = args[:tire_size] || default_tire_size
   end
 
+  def spares
+    {
+      tire_size: tire_size,
+      chain: chain
+    }
+  end
+
   def default_chain
     '10-speed'
   end
@@ -38,16 +45,12 @@ class RoadBike < Bicycle
   attr_reader :size, :tape_color
 
   def initialize(args)
-    @size = args[:size]
     @tape_color = args[:tape_color]
+    super(args)
   end
 
   def spares
-    {
-      chain: '10-speed',
-      tire_size: '23',
-      tape_color: tape_color
-    }
+    super.merge(tape_color: tape_color)
   end
 
   def default_tire_size
@@ -56,6 +59,17 @@ class RoadBike < Bicycle
 end
 
 class RecumbentBike < Bicycle
+  attr_reader :flag
+
+  def initialize(args)
+    @flag = flag
+    super(args)
+  end
+
+  def spares
+    super.merge(flag: flag)
+  end
+
   def default_chain
     '9-speed'
   end
@@ -68,5 +82,6 @@ end
 mountain_bike = MountainBike.new(size: 'S', front_shock: 'Manitou', rear_shock: 'Fox')
 puts mountain_bike.tire_size
 puts mountain_bike.chain
+puts mountain_bike.spares
 
 bent = RecumbentBike.new(size: 'S')
