@@ -9,22 +9,14 @@ class Trip
 
   def prepare(preparers)
     preparers.each do |preparer|
-      case preparer
-        when Mechanic
-          preparer.prepare_bicycles(bicycles)
-        when TripCoordinator
-          preparer.buy_food(customers)
-        when Driver
-          preparer.gas_up(vehicle)
-          preparer.fill_water_tank(vehicle)
-      end
+      preparer.prepare_trip(self)
     end
   end
 end
 
 class Mechanic
-  def prepare_bicycles(bicycles)
-    bicycles.each { |bicycle| prepare_bicycle(bicycle) }
+  def prepare_trip(trip)
+    trip.bicycles.each { |bicycle| prepare_bicycle(bicycle) }
   end
 
   def prepare_bicycle(bicycle)
@@ -33,18 +25,15 @@ class Mechanic
 end
 
 class TripCoordinator
-  def buy_food(customers)
-    customers.each { |customer| puts customer }
+  def prepare_trip(trip)
+    trip.customers.each { |customer| puts customer }
   end
 end
 
 class Driver
-  def gas_up(vehicle)
-    puts 'vehicle gas up'
-  end
-
-  def fill_water_tank(vehicle)
-    puts 'vehicle fill water tank'
+  def prepare_trip(trip)
+      puts 'vehicle gas up'
+      puts 'vehicle fill water tank'
   end
 end
 
