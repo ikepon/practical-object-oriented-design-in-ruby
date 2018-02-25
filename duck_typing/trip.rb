@@ -7,8 +7,18 @@ class Trip
     @vehicle = vehicle
   end
 
-  def prepare(mechanic)
-    mechanic.prepare_bicycles(bicycles)
+  def prepare(preparers)
+    preparers.each do |preparer|
+      case preparer
+        when Mechanic
+          preparer.prepare_bicycles(bicycles)
+        when TripCoordinator
+          preparer.buy_food(customers)
+        when Driver
+          preparer.gas_up(vehicle)
+          preparer.fill_water_tank(vehicle)
+      end
+    end
   end
 end
 
@@ -22,9 +32,29 @@ class Mechanic
   end
 end
 
+class TripCoordinator
+  def buy_food(customers)
+    customers.each { |customer| puts customer }
+  end
+end
+
+class Driver
+  def gas_up(vehicle)
+    puts 'vehicle gas up'
+  end
+
+  def fill_water_tank(vehicle)
+    puts 'vehicle fill water tank'
+  end
+end
+
 bicycles = ['bike', 'bike2', 'bike3']
+customers = ['aさん', 'bさん', 'cさん']
+vehicle = 'バス'
 
-trip = Trip.new(bicycles: bicycles)
+trip = Trip.new(bicycles: bicycles, customers: customers, vehicle: vehicle)
 mechanic = Mechanic.new
+trip_coordinator = TripCoordinator.new
+driver = Driver.new
 
-trip.prepare(mechanic)
+trip.prepare([mechanic, trip_coordinator, driver])
