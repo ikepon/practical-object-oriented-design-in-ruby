@@ -1,16 +1,24 @@
 class Bicycle
-  attr_reader :size, :chain, :tire_size
+  attr_reader :size, :parts
 
   def initialize(args)
     @size = args[:size]
+    @parts = args[:parts]
+  end
+
+  def spares
+    parts.spares
+  end
+end
+
+class Parts
+  attr_reader :chain, :tire_size
+
+  def initialize(args={})
     @chain = args[:chain] || default_chain
     @tire_size = args[:tire_size] || default_tire_size
 
     post_initialize(args)
-  end
-
-  def post_initialize(args)
-    nil
   end
 
   def spares
@@ -20,6 +28,15 @@ class Bicycle
     }.merge(local_spares)
   end
 
+  def default_tire_size
+    raise NotImplementedError, "This #{self.class} cannot respond to:"
+  end
+
+  # subclasses may override
+  def post_initialize(args)
+    nil
+  end
+
   def local_spares
     {}
   end
@@ -27,13 +44,9 @@ class Bicycle
   def default_chain
     '10-speed'
   end
-
-  def default_tire_size
-    raise NotImplementedError, "This #{self.class} cannot respond to:"
-  end
 end
 
-class MountainBike < Bicycle
+class MountainBikeParts < Parts
   attr_reader :front_shock, :rear_shock
 
   def post_initialize(args)
@@ -50,8 +63,8 @@ class MountainBike < Bicycle
   end
 end
 
-class RoadBike < Bicycle
-  attr_reader :size, :tape_color
+class RoadBikeParts < Parts
+  attr_reader :tape_color
 
   def post_initialize(args)
     @tape_color = args[:tape_color]
@@ -66,7 +79,7 @@ class RoadBike < Bicycle
   end
 end
 
-class RecumbentBike < Bicycle
+class RecumbentBikeParts < Parts
   attr_reader :flag
 
   def post_initialize(args)
@@ -86,10 +99,14 @@ class RecumbentBike < Bicycle
   end
 end
 
-mountain_bike = MountainBike.new(size: 'S', front_shock: 'Manitou', rear_shock: 'Fox')
-puts mountain_bike.tire_size
-puts mountain_bike.chain
+bent = RecumbentBikeParts.new(flag: 'tall and orange')
+puts bent.spares
+
+road_bike = Bicycle.new(size: 'L', parts: RoadBikeParts.new(tape_color: 'red'))
+puts road_bike.size
+puts road_bike.spares
+
+mountain_bike = Bicycle.new(size: 'L', parts: MountainBikeParts.new(front_shock: 'Manitou', rear_shock: 'Fox'))
+puts mountain_bike.size
 puts mountain_bike.spares
 
-bent = RecumbentBike.new(flag: 'tall and orange')
-puts bent.spares
