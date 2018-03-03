@@ -1,3 +1,5 @@
+require 'ostruct'
+
 class Bicycle
   attr_reader :size, :parts
 
@@ -23,26 +25,16 @@ class Parts
   end
 end
 
-class Part
-  attr_reader :name, :description, :needs_spare
-
-  def initialize(args)
-    @name = args[:name]
-    @@description = args[:description]
-    @needs_spare = args.fetch(:needs_spare, true)
-  end
-end
-
 module PartsFactory
-  def self.build(config, part_class = Part, parts_class = Parts)
-    parts_class.new(
-      a = config.collect do |part_config|
-        part_class.new(
-          name: part_config[0],
-          description: part_config[1],
-          needs_spare: part_config.fetch(2, true)
-        )
-      end
+  def self.build(config, parts_class = Parts)
+    parts_class.new(config.collect { |part_config| create_part(part_config) })
+  end
+
+  def self.create_part(part_config)
+    OpenStruct.new(
+      name: part_config[0],
+      description: part_config[1],
+      needs_spare: part_config.fetch(2, true)
     )
   end
 end
@@ -62,3 +54,6 @@ mountain_config = [
 
 puts road_parts = PartsFactory.build(road_config)
 puts mountain_parts = PartsFactory.build(mountain_config)
+
+road_bike = Bicycle.new(size: 'L', parts: road_parts)
+puts road_bike.spares
