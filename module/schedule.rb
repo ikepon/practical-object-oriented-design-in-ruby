@@ -7,14 +7,11 @@ class Schedule
   end
 end
 
+module Schedulable
+  attr_writer :schedule
 
-class Bicycle
-  attr_reader :schedule, :size, :chain, :tire_size
-
-  # Schedule を注入し初期値を設定
-  def initialize(args={})
-    @schedule = args[:schedule] || Schedule.new
-    #...
+  def schedule
+    @schedule ||= ::Schedule.new
   end
 
   # 与えられた期間に bicycle が利用可能なら true
@@ -25,6 +22,22 @@ class Bicycle
   # scheduleの答えを返す
   def scheduled?(start_date, end_date)
     schedule.scheduled?(self, start_date, end_date)
+  end
+
+  # 必要に応じて include する側で置き換える
+  # このmodule内で lead_days を使っているので実装が必要(P191)
+  def lead_days
+    0
+  end
+end
+
+
+class Bicycle
+  include Schedulable
+  attr_reader :size, :chain, :tire_size
+
+  def initialize(args={})
+    #...
   end
 
   # bicycle がスケジュール可能となるまでの準備日数
