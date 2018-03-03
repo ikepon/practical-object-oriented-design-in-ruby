@@ -33,70 +33,32 @@ class Part
   end
 end
 
-class MountainBikeParts < Parts
-  attr_reader :front_shock, :rear_shock
-
-  def post_initialize(args)
-    @front_shock = args[:front_shock]
-    @rear_shock = args[:rear_shock]
-  end
-
-  def local_spares
-    { rear_shock: rear_shock }
-  end
-
-  def default_tire_size
-    '2.1'
+module PartsFactory
+  def self.build(config, part_class = Part, parts_class = Parts)
+    parts_class.new(
+      a = config.collect do |part_config|
+        part_class.new(
+          name: part_config[0],
+          description: part_config[1],
+          needs_spare: part_config.fetch(2, true)
+        )
+      end
+    )
   end
 end
 
-class RoadBikeParts < Parts
-  attr_reader :tape_color
+road_config = [
+  ['chain', '10-speed'],
+  ['tire_size', '23'],
+  ['tape_color', 'red']
+]
 
-  def post_initialize(args)
-    @tape_color = args[:tape_color]
-  end
+mountain_config = [
+  ['chain', '10-speed'],
+  ['tire_size', '2.1'],
+  ['front_shock', 'Manitou', false],
+  ['rear_shock', 'Fox']
+]
 
-  def local_spares
-    { tape_color: tape_color }
-  end
-
-  def default_tire_size
-    '23'
-  end
-end
-
-class RecumbentBikeParts < Parts
-  attr_reader :flag
-
-  def post_initialize(args)
-    @flag = args[:flag]
-  end
-
-  def local_spares
-    { flag: flag }
-  end
-
-  def default_chain
-    '9-speed'
-  end
-
-  def default_tire_size
-    '20'
-  end
-end
-
-chain = Part.new(name: 'chain', description: '10-speed')
-road_tire = Part.new(name: 'road_tire', description: '23')
-tape = Part.new(name: 'tape', description: 'red')
-mountain_tire = Part.new(name: 'mountain_tire', description: '2.1')
-rear_shock = Part.new(name: 'rear_shock', description: 'Fox')
-front_shock = Part.new(name: 'front_shock', description: 'Manitou', needs_spare: false)
-
-road_bike_parts = Parts.new([chain, road_tire, tape])
-road_bike = Bicycle.new(size: 'L', parts: road_bike_parts)
-puts road_bike.spares
-
-mountain_bike_parts = Parts.new([chain, mountain_tire, front_shock, rear_shock])
-mountain_bike = Bicycle.new(size: 'L', parts: mountain_bike_parts)
-puts mountain_bike.spares
+puts road_parts = PartsFactory.build(road_config)
+puts mountain_parts = PartsFactory.build(mountain_config)
